@@ -1,4 +1,5 @@
 import '../styles/globals.css'
+import '../styles/react-crop.css'
 import type { AppProps } from 'next/app'
 import { Toaster } from 'react-hot-toast'
 import { QueryClient, QueryClientProvider } from 'react-query'

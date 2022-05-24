@@ -1,22 +1,16 @@
 import { formatDistanceToNow } from 'date-fns'
 import Link from 'next/link'
-import { HiFire, HiOutlineBookmark, HiOutlineChat, HiOutlineLockClosed, HiOutlineShare } from 'react-icons/hi'
-import { ImArrowDown, ImArrowUp } from 'react-icons/im'
+import { HiOutlineBookmark, HiOutlineChat, HiOutlineLockClosed, HiOutlineShare } from 'react-icons/hi'
 import { PostResponse } from '../types/response'
 import sanitizeHtml from 'sanitize-html'
-import useUpvote from '../lib/client/hooks/post/useUpvote'
-import useDownVote from '../lib/client/hooks/post/useDownvote'
+import PostEngagement from './PostEngagement'
 
 interface PostProps {
     data: PostResponse
 }
 
 function Post({ data }: PostProps) {
-    const { id, author, content, upvotes_count, downvotes_count, created_at, group, is_public } = data
-    const totalVoteCount = upvotes_count === 0 && downvotes_count === 0 ? 0 : upvotes_count - downvotes_count
-
-    const { mutate: upvotePost, isLoading: isUpvotingPost } = useUpvote()
-    const { mutate: downvotePost, isLoading: isDownvotingPost } = useDownVote()
+    const { id, author, content, created_at, group, is_public, comments_count } = data
 
     return (
         <div className="flex flex-row items-start w-full mb-8">
@@ -29,22 +23,9 @@ function Post({ data }: PostProps) {
                         />
                     </a>
                 </Link>
-                <div className="flex flex-col items-center text-slate-400 mt-4 gap-1">
-                    <button className="flex" disabled={isUpvotingPost} onClick={() => upvotePost(id)}>
-                        <ImArrowUp fontSize={20} className="m-auto p-0.5" />
-                    </button>
-                    <span className="font-medium">{totalVoteCount}</span>
-                    <button className="flex" disabled={isDownvotingPost} onClick={() => downvotePost(id)}>
-                        <ImArrowDown fontSize={20} className="m-auto p-0.5" />
-                    </button>
-                </div>
-                <div className="mt-2">
-                    <button className="flex text-slate-300">
-                        <HiFire fontSize={28} className="m-auto p-0.5" />
-                    </button>
-                </div>
+                <PostEngagement post={data} />
             </div>
-            <div className="flex flex-col ml-3">
+            <div className="flex flex-col ml-3 flex-1">
                 <div className="flex flex-row items-center text-sm mb-1.5 gap-2">
                     <Link href={`/user/${author.username}`}>
                         <a>
@@ -60,10 +41,10 @@ function Post({ data }: PostProps) {
                 <Link href={`/post/${id}`}>
                     <a dangerouslySetInnerHTML={{ __html: sanitizeHtml(content) }} />
                 </Link>
-                <div className="mt-2 text-sm text-slate-400">
+                <div className="mt-0 text-sm text-slate-400">
                     Posted in{' '}
                     <Link href={`/group/${group.id}`}>
-                        <a className="link mr-2">{group.name}</a>
+                        <a className="link mr-3">{group.name}</a>
                     </Link>
                     {!is_public && (
                         <div
@@ -76,9 +57,9 @@ function Post({ data }: PostProps) {
                     )}
                 </div>
                 <div className="mt-2 flex items-center gap-1">
-                    <button className="button-icon h-8">
+                    <button className="button-icon h-8 pointer-events-none">
                         <HiOutlineChat fontSize={20} className="-ml-1" />{' '}
-                        <span className="ml-2 text-sm font-medium">3</span>
+                        <span className="ml-2 text-sm font-medium">{comments_count}</span>
                     </button>
                     <button className="button-icon h-8">
                         <HiOutlineBookmark fontSize={20} />

@@ -1,50 +1,62 @@
 export type GroupResponse = {
-	id: string
-	name: string
-	display_image: string
-	cover_image: string
-	members_count: number
-	description?: string
+    id: string
+    name: string
+    display_image: string
+    cover_image: string
+    members_count: number
+    admins?: UserResponse[]
+    members?: UserResponse[]
+    description?: string
+}
+
+export type GroupCreatePayload = {
+    name: string
+    display_image: string
+    cover_image: string
+    description: string
 }
 
 export type UserResponse = {
-	id: string
-	username: string
-	name: string
-	avatar: null | string
+    id: string
+    username: string
+    name: string
+    avatar: null | string
 }
 
 export type UpvoteResponse = {
-	id: string
-	created_at: string
-	updated_at: string
-	post_id: string
-	author_id: string
+    id: string
+    created_at: string
+    updated_at: string
 }
 
 export type DownvoteResponse = {
-	id: string
-	created_at: string
-	updated_at: string
-	post_id: string
-	author_id: string
+    id: string
+    created_at: string
+    updated_at: string
+}
+
+export type CommentResponse = {
+    id: string
+    created_at: string
+    updated_at: string
+    comment_text: string
+    author: UserResponse
 }
 
 export type PostResponse = {
-	id: string
-	created_at: string
-	updated_at: string
-	content: string
-	author_id: string
-	group_id: string
-	upvotes_count: number
-	downvotes_count: number
-	upvoted_by_me: boolean
-	downvoted_by_me: boolean
-	bookmarked_by_me: boolean
-	is_public: boolean
-	author: UserResponse
-	group: GroupResponse
-	upvotes: UpvoteResponse[]
-	downvotes: DownvoteResponse[]
+    id: string
+    created_at: string
+    updated_at: string
+    content: string
+    upvotes_count: number
+    downvotes_count: number
+    upvoted_by_me: boolean
+    downvoted_by_me: boolean
+    bookmarked_by_me: boolean
+    is_public: boolean
+    author: UserResponse
+    group: GroupResponse
+    comments: CommentResponse[]
+    comments_count: number
+    hots_count: number
 }
