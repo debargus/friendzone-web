@@ -1,16 +1,30 @@
 import { formatDistanceToNow } from 'date-fns'
 import Link from 'next/link'
-import { HiOutlineBookmark, HiOutlineChat, HiOutlineLockClosed, HiOutlineShare } from 'react-icons/hi'
+import { HiFire, HiOutlineBookmark, HiOutlineChat, HiOutlineLockClosed, HiOutlineShare } from 'react-icons/hi'
 import { PostResponse } from '../types/response'
 import sanitizeHtml from 'sanitize-html'
 import PostEngagement from './PostEngagement'
+import useAddHot from '../lib/client/hooks/post/useAddHot'
+import toast from 'react-hot-toast'
 
 interface PostProps {
     data: PostResponse
 }
 
 function Post({ data }: PostProps) {
-    const { id, author, content, created_at, group, is_public, comments_count } = data
+    const { id, author, content, created_at, group, is_public, comments_count, hots_count, is_updated } = data
+
+    const { mutateAsync: addHot, isLoading: isAddingHot } = useAddHot()
+    // const { mutate: removeHot, isLoading: isRemovingHot } = useRemoveHot()
+
+    async function handleHotClick() {
+        try {
+            await addHot(id)
+            toast.success('Post marked as Hot')
+        } catch (err) {
+            toast.error('Post could not be marked as Hot')
+        }
+    }
 
     return (
         <div className="flex flex-row items-start w-full mb-8">
@@ -35,7 +49,7 @@ function Post({ data }: PostProps) {
                     </Link>
                     <span className="text-slate-400">&bull;</span>
                     <span className="text-slate-500">
-                        {formatDistanceToNow(new Date(created_at), { addSuffix: true })}
+                        {formatDistanceToNow(new Date(created_at), { addSuffix: true })} {is_updated && '(edited)'}
                     </span>
                 </div>
                 <Link href={`/post/${id}`}>
@@ -57,15 +71,19 @@ function Post({ data }: PostProps) {
                     )}
                 </div>
                 <div className="mt-2 flex items-center gap-1">
-                    <button className="button-icon h-8 pointer-events-none">
-                        <HiOutlineChat fontSize={20} className="-ml-1" />{' '}
-                        <span className="ml-2 text-sm font-medium">{comments_count}</span>
+                    <button className="button-icon h-8" onClick={handleHotClick} disabled={isAddingHot}>
+                        <HiFire fontSize={20} className="text-slate-500 -ml-1" />
+                        <span className="ml-1 text-sm font-medium">{hots_count}</span>
                     </button>
                     <button className="button-icon h-8">
-                        <HiOutlineBookmark fontSize={20} />
+                        <HiOutlineChat fontSize={20} className="text-slate-500 -ml-1" />
+                        <span className="ml-1 text-sm font-medium">{comments_count}</span>
                     </button>
                     <button className="button-icon h-8">
-                        <HiOutlineShare fontSize={20} />
+                        <HiOutlineBookmark fontSize={20} className="text-slate-500" />
+                    </button>
+                    <button className="button-icon h-8">
+                        <HiOutlineShare fontSize={20} className="text-slate-500" />
                     </button>
                 </div>
             </div>

@@ -1,5 +1,7 @@
 import { GetServerSideProps } from 'next'
 import Post from '../components/Post'
+import EmptyComponent from '../components/shared/EmptyComponent'
+import Layout from '../components/shared/Layout'
 import SEO from '../components/shared/SEO'
 import useAllPosts from '../lib/client/hooks/post/useAllPosts'
 
@@ -21,10 +23,18 @@ function IndexPage({ authenticated }: IndexPageProps) {
 
     return (
         <SEO>
-            <h3 className="font-semibold text-slate-700">Recent Posts</h3>
-            <div className="mt-5">
-                {isLoading ? <p>Loading...</p> : data?.map((post) => <Post key={post.id} data={post} />)}
-            </div>
+            <Layout>
+                <h3 className="font-semibold text-slate-700">Recent Posts</h3>
+                <div className="mt-5">
+                    {isLoading ? (
+                        <p>Loading...</p>
+                    ) : data?.length ? (
+                        data.map((post) => <Post key={post.id} data={post} />)
+                    ) : (
+                        <EmptyComponent title="No posts here!" description="There are no recommended posts" />
+                    )}
+                </div>
+            </Layout>
         </SEO>
     )
 }

@@ -30,6 +30,7 @@ function Login() {
         username: '',
         password: ''
     })
+    const [isLoading, setIsLoading] = useState(false)
 
     function handleInputChange(e: any) {
         setFormValues((state) => ({ ...state, [e.target.name]: e.target.value }))
@@ -37,17 +38,16 @@ function Login() {
 
     async function onSubmit(e: any) {
         e.preventDefault()
-
+        setIsLoading(true)
         try {
-            const response = await client.post('/auth/login', formValues)
-            const { data } = response
-            const { message } = data
-            toast.success(message)
+            await client.post('/auth/login', formValues)
+            toast.success('Login Successful!')
             router.push('/')
-        } catch (err) {
+        } catch (err: any) {
+            toast.error(`Error: ${err?.response?.data?.message}` ?? 'Something went wrong!')
             console.log(err)
-            // toast.success(message)
         }
+        setIsLoading(false)
     }
 
     return (
@@ -96,10 +96,10 @@ function Login() {
                                 />
                             </div>
                         </div>
-                        <button className="button w-full" type="submit">
+                        <button className="button w-full" type="submit" disabled={isLoading}>
                             Login
                         </button>
-                        <button className="mt-3 button-light w-full">
+                        <button className="mt-3 button-light w-full" disabled>
                             <IoLogoGoogle className="mr-2 text-slate-500" fontSize={20} />
                             <span>Login with Google</span>
                         </button>

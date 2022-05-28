@@ -7,6 +7,6 @@ export const fetchUserInfo = async (userId: string) => {
     return data?.data?.user
 }
 
-export default function useMyInfo(userId: string) {
+export default function useUserInfo(userId: string) {
     return useQuery<UserResponse>(['user_info', userId], () => fetchUserInfo(userId), { enabled: !!userId })
 }

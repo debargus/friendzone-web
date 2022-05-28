@@ -1,33 +1,70 @@
-import { Listbox, Switch, Transition } from '@headlessui/react'
+import { Dialog, Listbox, Switch, Transition } from '@headlessui/react'
 import classNames from 'classnames'
 import React, { Fragment, useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { HiCheck, HiOutlineSelector } from 'react-icons/hi'
-import { EditorState, convertToRaw } from 'draft-js'
+import { EditorState, convertToRaw, ContentState } from 'draft-js'
 import dynamic from 'next/dynamic'
 import { Editor } from 'react-draft-wysiwyg'
+import htmlToDraft from 'html-to-draftjs'
 import draftToHtml from 'draftjs-to-html'
 import { useRouter } from 'next/router'
-import useMyInfo from '../../lib/client/hooks/user/useMyInfo'
-import useUserGroups from '../../lib/client/hooks/user/useUserGroups'
-import useCreatePost, { PostCreatePayload } from '../../lib/client/hooks/post/useCreatePost'
-import SEO from '../../components/shared/SEO'
-import Layout from '../../components/shared/Layout'
+import useMyInfo from '../../../lib/client/hooks/user/useMyInfo'
+import useUserGroups from '../../../lib/client/hooks/user/useUserGroups'
+import SEO from '../../../components/shared/SEO'
+import Layout from '../../../components/shared/Layout'
+import useDeletePost from '../../../lib/client/hooks/post/useDeletePost'
+import { PostResponse } from '../../../types/response'
+import { GetServerSideProps } from 'next'
+import { fetchPost } from '../../../lib/client/hooks/post/usePost'
+import useUpdatePost, { PostUpdatePayload } from '../../../lib/client/hooks/post/useUpdatePost'
 
 const RichEditor = dynamic(() => import('react-draft-wysiwyg').then(({ Editor }) => Editor) as any, {
     ssr: false
 }) as typeof Editor
 
-function CreatePost() {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    const { params, req } = context
+    const authenticated = !!req.cookies?.jwt
+
+    const post = await fetchPost(String(params?.id))
+
+    if (!post) {
+        return {
+            notFound: true
+        }
+    }
+
+    if (!authenticated) {
+        return {
+            redirect: {
+                destination: '/',
+                permanent: false
+            }
+        }
+    }
+
+    return {
+        props: { post }
+    }
+}
+
+interface UpdatePostProps {
+    post: PostResponse
+}
+
+function UpdatePost({ post }: UpdatePostProps) {
     const [editorState, setEditorState] = useState(EditorState.createEmpty())
     const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null)
     const [isPublic, setIsPublic] = useState(true)
     const [isEditorFocused, setIsEditorFocused] = useState(false)
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false)
     const router = useRouter()
 
     const { data: myInfo } = useMyInfo(true)
     const { data: myGroups } = useUserGroups(myInfo?.id)
-    const { mutateAsync: createPost, isLoading: isCreatingPost } = useCreatePost()
+    const { mutateAsync: updatePost, isLoading: isUpdatingPost } = useUpdatePost()
+    const { mutateAsync: deletePost, isLoading: isDeletingPost } = useDeletePost()
 
     const grabGroupNameById = useCallback(
         (id: string) => {
@@ -41,7 +78,7 @@ function CreatePost() {
         [myGroups]
     )
 
-    async function handleCreatePost() {
+    async function handleUpdatePost() {
         const editorContent = editorState.getCurrentContent()
         const isEditorEmpty = !editorContent.hasText()
 
@@ -50,22 +87,17 @@ function CreatePost() {
             return
         }
 
-        if (!selectedGroupId) {
-            toast.error('Please select a group')
-            return
-        }
-
-        const payload: PostCreatePayload = {
+        const payload: PostUpdatePayload = {
+            post_id: post.id,
             content: draftToHtml(convertToRaw(editorContent)),
-            group_id: selectedGroupId,
             is_public: isPublic
         }
 
         try {
-            const postData = await createPost(payload)
-            toast.success('Post created successfully!')
+            await updatePost(payload)
+            toast.success('Post updated successfully!')
             setTimeout(() => {
-                router.push(`/post/${postData?.id}`)
+                router.push(`/post/${post.id}`)
             }, 200)
         } catch (err) {
             console.log(err)
@@ -73,22 +105,36 @@ function CreatePost() {
         }
     }
 
-    useEffect(() => {
-        setEditorState(EditorState.moveFocusToEnd(editorState))
-    }, [])
+    async function handleDeletePost() {
+        if (myInfo?.id !== post.author.id) return
+        await deletePost(post.id)
+        toast.success('Post deleted successfully!')
+        router.push('/')
+    }
 
     useEffect(() => {
-        const { groupId } = router.query
-        if (!groupId || !myGroups?.groups.length) return
-        const selectedGroup = !!myGroups.groups.find((group) => group.id === String(groupId))
-        if (selectedGroup) setSelectedGroupId(String(groupId))
-    }, [myGroups, router.query])
+        const { content, is_public } = post
+        setIsPublic(is_public)
+        if (content) {
+            const contentBlock = htmlToDraft(content)
+            if (contentBlock) {
+                const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks)
+                setEditorState(EditorState.createWithContent(contentState))
+            }
+        }
+    }, [post])
+
+    useEffect(() => {
+        if (!post.group.id || !myGroups?.groups.length) return
+        const selectedGroup = !!myGroups.groups.find((group) => group.id === post.group.id)
+        if (selectedGroup) setSelectedGroupId(post.group.id)
+    }, [myGroups, post])
 
     return (
-        <SEO title="Create a new post">
+        <SEO title="Update post">
             <Layout>
                 <div className="mb-6">
-                    <h3 className="font-semibold text-slate-700 mb-5">Create a new post</h3>
+                    <h3 className="font-semibold text-slate-700 mb-5">Update post</h3>
                     <div className="mt-4">
                         <div className="min-h-[7rem]">
                             <RichEditor
@@ -105,8 +151,8 @@ function CreatePost() {
                         </div>
                     </div>
                     <div className="mt-4 flex items-start justify-between">
-                        <Listbox value={selectedGroupId} onChange={setSelectedGroupId}>
-                            <div className="relative w-48">
+                        <Listbox value={selectedGroupId} onChange={() => null}>
+                            <div className="relative w-48 pointer-events-none opacity-50">
                                 <Listbox.Button className="relative w-full cursor-default border border-slate-100 rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-sky-300 sm:text-sm">
                                     <span className={classNames(!selectedGroupId && 'opacity-50', 'block truncate')}>
                                         {selectedGroupId ? grabGroupNameById(selectedGroupId) : 'Select a group'}
@@ -178,15 +224,75 @@ function CreatePost() {
                             </Switch.Group>
                         </div>
                     </div>
-                    <div className="flex items-center mt-6">
-                        <button type="button" className="button" onClick={handleCreatePost} disabled={isCreatingPost}>
-                            Create Post
+                    <div className="flex items-center mt-6 gap-2">
+                        <button type="button" className="button" onClick={handleUpdatePost} disabled={isUpdatingPost}>
+                            Update Post
+                        </button>
+                        <button
+                            type="button"
+                            className="button-light text-red-500"
+                            onClick={() => setDeleteModalOpen(true)}
+                        >
+                            Delete Post
                         </button>
                     </div>
                 </div>
             </Layout>
+            <Transition appear show={deleteModalOpen} as={Fragment}>
+                <Dialog as="div" className="relative z-10" onClose={setDeleteModalOpen}>
+                    <Transition.Child
+                        as={Fragment}
+                        enter="ease-out duration-200"
+                        enterFrom="opacity-0"
+                        enterTo="opacity-100"
+                        leave="ease-in duration-200"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                    >
+                        <div className="fixed inset-0 bg-black bg-opacity-25" />
+                    </Transition.Child>
+
+                    <div className="fixed inset-0 overflow-y-auto">
+                        <div className="flex min-h-full items-center justify-center p-4 text-center">
+                            <Transition.Child
+                                as={Fragment}
+                                enter="ease-out duration-200"
+                                enterFrom="opacity-0 scale-95"
+                                enterTo="opacity-100 scale-100"
+                                leave="ease-in duration-200"
+                                leaveFrom="opacity-100 scale-100"
+                                leaveTo="opacity-0 scale-95"
+                            >
+                                <Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded-lg bg-white p-5 text-left align-middle shadow-xl transition-all">
+                                    <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+                                        Confirmation
+                                    </Dialog.Title>
+                                    <div className="mt-4">Are you really sure to delete this post?</div>
+                                    <div className="mt-4 flex items-center justify-end">
+                                        <button
+                                            type="button"
+                                            className="button bg-red-500 active:bg-red-600"
+                                            disabled={isDeletingPost}
+                                            onClick={handleDeletePost}
+                                        >
+                                            Delete Post
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="button-light ml-2"
+                                            onClick={() => setDeleteModalOpen(false)}
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </Dialog.Panel>
+                            </Transition.Child>
+                        </div>
+                    </div>
+                </Dialog>
+            </Transition>
         </SEO>
     )
 }
 
-export default CreatePost
+export default UpdatePost

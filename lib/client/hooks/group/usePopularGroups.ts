@@ -8,5 +8,5 @@ const fetchGroups = async () => {
 }
 
 export default function usePopularGroups() {
-    return useQuery<GroupResponse[]>('popular_groups', fetchGroups)
+    return useQuery<GroupResponse[]>('popular_groups', fetchGroups, { staleTime: 60 * 15 * 1000 })
 }

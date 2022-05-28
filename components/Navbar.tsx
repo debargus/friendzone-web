@@ -104,9 +104,11 @@ function Navbar({ user }: NavbarProps) {
                             </Menu.Items>
                         </Transition>
                     </Menu>
-                    <button className="button-icon">
-                        <HiOutlineInbox fontSize={22} />
-                    </button>
+                    <Link href="/chat">
+                        <a className="button-icon">
+                            <HiOutlineInbox fontSize={22} />
+                        </a>
+                    </Link>
                     <button className="button-icon relative">
                         <HiOutlineBell fontSize={22} />
                         <span className="absolute bg-rose-500 text-white text-xs font-medium rounded rounded-md px-1 bottom-5 left-5">
@@ -156,7 +158,7 @@ function Navbar({ user }: NavbarProps) {
                                         <Menu.Item>
                                             {({ active }) => (
                                                 <div
-                                                    onClick={() => router.push('/profile')}
+                                                    onClick={() => router.push('/profile/settings')}
                                                     className={classNames(
                                                         active && 'bg-gray-100',
                                                         'active:bg-gray-200 rounded-md px-4 py-2 text-sm font-medium text-slate-700 cursor-pointer focus:bg-gray-200'

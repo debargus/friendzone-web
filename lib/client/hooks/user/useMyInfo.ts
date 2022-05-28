@@ -3,7 +3,7 @@ import { UserResponse } from '../../../../types/response'
 import { client } from '../../index'
 
 export const fetchMyInfo = async () => {
-    const { data } = await client.get(`/user/me`)
+    const { data } = await client.get('/user/me')
     return data?.data?.user
 }
 

@@ -1,5 +1,11 @@
+import Layout from '../components/shared/Layout'
+
 function Saved() {
-    return <h1 className="mb-2">Saved</h1>
+    return (
+        <Layout>
+            <h1 className="mb-2">Saved</h1>
+        </Layout>
+    )
 }
 
 export default Saved
