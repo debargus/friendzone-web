@@ -49,7 +49,7 @@ function UserDetails({ user, authenticated }: UserDetailsProps) {
 
     return (
         <SEO title={name} description={description} image={avatar ?? ''}>
-            <Layout rightSideComponent={<PopularUsers />}>
+            <Layout aside={<PopularUsers />}>
                 <ProfileHeader profileData={user} isMyProfile={myInfo?.id === user.id} />
                 <div className="my-8">
                     <h3 className="font-semibold text-slate-700">Recent Posts</h3>

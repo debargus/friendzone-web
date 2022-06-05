@@ -13,6 +13,7 @@ import useUserGroups from '../../lib/client/hooks/user/useUserGroups'
 import useCreatePost, { PostCreatePayload } from '../../lib/client/hooks/post/useCreatePost'
 import SEO from '../../components/shared/SEO'
 import Layout from '../../components/shared/Layout'
+import PopularGroups from '../../components/PopularGroups'
 
 const RichEditor = dynamic(() => import('react-draft-wysiwyg').then(({ Editor }) => Editor) as any, {
     ssr: false
@@ -86,7 +87,7 @@ function CreatePost() {
 
     return (
         <SEO title="Create a new post">
-            <Layout>
+            <Layout aside={<PopularGroups />}>
                 <div className="mb-6">
                     <h3 className="font-semibold text-slate-700 mb-5">Create a new post</h3>
                     <div className="mt-4">

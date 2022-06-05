@@ -1,14 +1,13 @@
 import Navbar from '../Navbar'
 import Sidebar from '../Sidebar'
-import PopularGroups from '../PopularGroups'
 import useMyInfo from '../../lib/client/hooks/user/useMyInfo'
 
 interface LayoutProps {
     children: React.ReactNode
-    rightSideComponent?: React.ReactNode
+    aside?: React.ReactNode
 }
 
-function Layout({ children, rightSideComponent }: LayoutProps) {
+function Layout({ children, aside }: LayoutProps) {
     const { data } = useMyInfo(true)
 
     return (
@@ -17,7 +16,7 @@ function Layout({ children, rightSideComponent }: LayoutProps) {
             <div className="flex flex-row max-w-7xl mx-auto pt-6">
                 <Sidebar />
                 <div className="flex-1 px-4">{children}</div>
-                {rightSideComponent ? rightSideComponent : <PopularGroups />}
+                {aside && <div className="flex flex-col w-72 px-4">{aside}</div>}
             </div>
         </div>
     )

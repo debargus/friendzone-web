@@ -104,7 +104,7 @@ function Navbar({ user }: NavbarProps) {
                             </Menu.Items>
                         </Transition>
                     </Menu>
-                    <Link href="/chat">
+                    <Link href="/messages">
                         <a className="button-icon">
                             <HiOutlineInbox fontSize={22} />
                         </a>

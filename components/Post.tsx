@@ -6,23 +6,28 @@ import sanitizeHtml from 'sanitize-html'
 import PostEngagement from './PostEngagement'
 import useAddHot from '../lib/client/hooks/post/useAddHot'
 import toast from 'react-hot-toast'
+import useRemoveHot from '../lib/client/hooks/post/useRemoveHot'
+import classNames from 'classnames'
 
 interface PostProps {
     data: PostResponse
 }
 
 function Post({ data }: PostProps) {
-    const { id, author, content, created_at, group, is_public, comments_count, hots_count, is_updated } = data
+    const { id, author, content, created_at, group, is_public, comments_count, hots_count, is_updated, my_hot } = data
 
     const { mutateAsync: addHot, isLoading: isAddingHot } = useAddHot()
-    // const { mutate: removeHot, isLoading: isRemovingHot } = useRemoveHot()
+    const { mutateAsync: removeHot, isLoading: isRemovingHot } = useRemoveHot()
 
     async function handleHotClick() {
         try {
-            await addHot(id)
-            toast.success('Post marked as Hot')
+            if (!!my_hot) {
+                await removeHot(id)
+            } else {
+                await addHot(id)
+            }
         } catch (err) {
-            toast.error('Post could not be marked as Hot')
+            toast.error('Something went wrong!')
         }
     }
 
@@ -71,8 +76,12 @@ function Post({ data }: PostProps) {
                     )}
                 </div>
                 <div className="mt-2 flex items-center gap-1">
-                    <button className="button-icon h-8" onClick={handleHotClick} disabled={isAddingHot}>
-                        <HiFire fontSize={20} className="text-slate-500 -ml-1" />
+                    <button
+                        className={classNames(!!my_hot ? 'text-orange-500' : 'text-slate-500', 'button-icon h-8')}
+                        onClick={handleHotClick}
+                        disabled={isAddingHot || isRemovingHot}
+                    >
+                        <HiFire fontSize={20} className="-ml-1" />
                         <span className="ml-1 text-sm font-medium">{hots_count}</span>
                     </button>
                     <button className="button-icon h-8">

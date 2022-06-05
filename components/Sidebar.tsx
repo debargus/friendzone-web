@@ -15,7 +15,7 @@ function Sidebar({}: SidebarProps) {
                     <Link href={item.link} key={item.key}>
                         <a
                             className={classNames(
-                                item.matchingPaths.includes(router.asPath) && 'bg-slate-100 text-sky-500',
+                                item.matchingPaths.includes(router.pathname) && 'bg-slate-100 text-sky-500',
                                 'flex items-center py-2 px-4 text-sm leading-5 rounded-md font-semibold text-slate-600 hover:bg-slate-100 active:bg-slate-200'
                             )}
                         >

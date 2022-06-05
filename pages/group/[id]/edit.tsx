@@ -20,6 +20,7 @@ import Layout from '../../../components/shared/Layout'
 import { getCroppedImg } from '../../../lib/utils/getCroppedImg'
 import useUpdateGroup from '../../../lib/client/hooks/group/useUpdateGroup'
 import useDeleteGroup from '../../../lib/client/hooks/group/useDeleteGroup'
+import PopularGroups from '../../../components/PopularGroups'
 
 const RichEditor = dynamic(() => import('react-draft-wysiwyg').then(({ Editor }) => Editor) as any, {
     ssr: false
@@ -158,7 +159,7 @@ function UpdateGroup({ group }: GroupUpdateProps) {
 
     return (
         <SEO title="Create a new group">
-            <Layout>
+            <Layout aside={<PopularGroups />}>
                 <div className="mb-6">
                     <h3 className="font-semibold text-slate-700 mb-5">Update Group</h3>
                     <label

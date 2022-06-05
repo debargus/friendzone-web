@@ -16,10 +16,10 @@ export const SIDEBAR_LINK = [
         icon: <HiTrendingUp fontSize={22} />
     },
     {
-        key: 'chat',
-        label: 'Chat',
-        link: '/chat',
-        matchingPaths: ['/chat'],
+        key: 'messages',
+        label: 'Messages',
+        link: '/messages',
+        matchingPaths: ['/messages'],
         icon: <HiOutlineAnnotation fontSize={22} />
     },
     {

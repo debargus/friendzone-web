@@ -1,4 +1,5 @@
 import { GetServerSideProps } from 'next'
+import PopularGroups from '../components/PopularGroups'
 import Post from '../components/Post'
 import EmptyComponent from '../components/shared/EmptyComponent'
 import Layout from '../components/shared/Layout'
@@ -22,8 +23,8 @@ function IndexPage({ authenticated }: IndexPageProps) {
     const { data, isLoading } = useAllPosts(authenticated)
 
     return (
-        <SEO>
-            <Layout>
+        <SEO title="Home">
+            <Layout aside={<PopularGroups />}>
                 <h3 className="font-semibold text-slate-700">Recent Posts</h3>
                 <div className="mt-5">
                     {isLoading ? (

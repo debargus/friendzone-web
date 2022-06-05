@@ -6,6 +6,7 @@ import toast from 'react-hot-toast'
 import { HiOutlineClock, HiOutlinePencilAlt, HiOutlinePlus, HiOutlineShare } from 'react-icons/hi'
 import { useQueryClient } from 'react-query'
 import sanitizeHtml from 'sanitize-html'
+import PopularGroups from '../../../components/PopularGroups'
 import Post from '../../../components/Post'
 import EmptyComponent from '../../../components/shared/EmptyComponent'
 import Layout from '../../../components/shared/Layout'
@@ -117,7 +118,7 @@ function GroupDetails({ group, authenticated }: GroupDetailsProps) {
 
     return (
         <SEO title={name} description={description} image={display_image}>
-            <Layout>
+            <Layout aside={<PopularGroups />}>
                 <div
                     className="aspect-[6/2] rounded-lg bg-cover bg-center bg-sky-100"
                     style={{ backgroundImage: `url("${cover_image}")` }}

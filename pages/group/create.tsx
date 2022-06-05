@@ -16,6 +16,7 @@ import dynamic from 'next/dynamic'
 import { Editor } from 'react-draft-wysiwyg'
 import draftToHtml from 'draftjs-to-html'
 import Layout from '../../components/shared/Layout'
+import PopularGroups from '../../components/PopularGroups'
 
 const RichEditor = dynamic(() => import('react-draft-wysiwyg').then(({ Editor }) => Editor) as any, {
     ssr: false
@@ -113,7 +114,7 @@ function CreateGroup() {
 
     return (
         <SEO title="Create a new group">
-            <Layout>
+            <Layout aside={<PopularGroups />}>
                 <div className="mb-6">
                     <h3 className="font-semibold text-slate-700 mb-5">Create Group</h3>
                     <label

@@ -18,6 +18,7 @@ import { PostResponse } from '../../../types/response'
 import { GetServerSideProps } from 'next'
 import { fetchPost } from '../../../lib/client/hooks/post/usePost'
 import useUpdatePost, { PostUpdatePayload } from '../../../lib/client/hooks/post/useUpdatePost'
+import PopularGroups from '../../../components/PopularGroups'
 
 const RichEditor = dynamic(() => import('react-draft-wysiwyg').then(({ Editor }) => Editor) as any, {
     ssr: false
@@ -132,7 +133,7 @@ function UpdatePost({ post }: UpdatePostProps) {
 
     return (
         <SEO title="Update post">
-            <Layout>
+            <Layout aside={<PopularGroups />}>
                 <div className="mb-6">
                     <h3 className="font-semibold text-slate-700 mb-5">Update post</h3>
                     <div className="mt-4">

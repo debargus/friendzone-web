@@ -79,7 +79,7 @@ function Register() {
                         </div>
                         <div className="mt-3 max-w-md">
                             <label htmlFor="username" className="block text-sm font-medium text-slate-700 flex-1">
-                                User Name
+                                Username
                             </label>
                             <div className="mt-2">
                                 <input

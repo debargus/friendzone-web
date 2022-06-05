@@ -57,6 +57,12 @@ export type DownvoteResponse = {
     updated_at: string
 }
 
+export type HotResponse = {
+    id: string
+    created_at: string
+    updated_at: string
+}
+
 export type CommentResponse = {
     id: string
     created_at: string
@@ -82,4 +88,7 @@ export type PostResponse = {
     comments: CommentResponse[]
     comments_count: number
     hots_count: number
+    my_downvote: DownvoteResponse | null
+    my_upvote: UpvoteResponse | null
+    my_hot: HotResponse | null
 }

@@ -48,9 +48,11 @@ function ProfileHeader({ profileData, isMyProfile }: { profileData: UserResponse
 							</Link>
 						) : (
 							<div className="flex items-center gap-2">
-								<button className="button-light px-2.5">
-									<HiOutlineMail fontSize={20} />
-								</button>
+								<Link href={`/messages?id=${id}`}>
+									<a className="button-light px-2.5">
+										<HiOutlineMail fontSize={20} />
+									</a>
+								</Link>
 								<button
 									className="button"
 									disabled={isFollowUserLoading || isUnfollowUserLoading}

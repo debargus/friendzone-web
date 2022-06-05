@@ -19,6 +19,7 @@ import useUpdateMyInfo from '../../lib/client/hooks/user/useUpdateMyInfo'
 import { useRouter } from 'next/router'
 import { useQueryClient } from 'react-query'
 import Layout from '../../components/shared/Layout'
+import PopularGroups from '../../components/PopularGroups'
 
 const RichEditor = dynamic(() => import('react-draft-wysiwyg').then(({ Editor }) => Editor) as any, {
 	ssr: false
@@ -158,7 +159,7 @@ function EditProfile({ authenticated }: { authenticated: boolean }) {
 
 	return (
 		<SEO title="Edit Profile">
-			<Layout>
+			<Layout aside={<PopularGroups />}>
 				<div className="mb-8">
 					<h3 className="font-semibold text-slate-700 mb-5">Update Profile</h3>
 					<label
