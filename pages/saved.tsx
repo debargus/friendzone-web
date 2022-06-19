@@ -1,10 +1,11 @@
 import PopularGroups from '../components/PopularGroups'
+import EmptyComponent from '../components/shared/EmptyComponent'
 import Layout from '../components/shared/Layout'
 
 function Saved() {
     return (
         <Layout aside={<PopularGroups />}>
-            <h1 className="mb-2">Saved</h1>
+            <EmptyComponent title="Coming Soon!" description="This page is under development." />
         </Layout>
     )
 }

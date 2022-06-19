@@ -14,6 +14,7 @@ import useCreatePost, { PostCreatePayload } from '../../lib/client/hooks/post/us
 import SEO from '../../components/shared/SEO'
 import Layout from '../../components/shared/Layout'
 import PopularGroups from '../../components/PopularGroups'
+import InfoComponent from '../../components/shared/InfoComponent'
 
 const RichEditor = dynamic(() => import('react-draft-wysiwyg').then(({ Editor }) => Editor) as any, {
     ssr: false
@@ -27,7 +28,7 @@ function CreatePost() {
     const router = useRouter()
 
     const { data: myInfo } = useMyInfo(true)
-    const { data: myGroups } = useUserGroups(myInfo?.id)
+    const { data: myGroups, isLoading: isMyGroupsLoading } = useUserGroups(myInfo?.id)
     const { mutateAsync: createPost, isLoading: isCreatingPost } = useCreatePost()
 
     const grabGroupNameById = useCallback(
@@ -106,7 +107,11 @@ function CreatePost() {
                         </div>
                     </div>
                     <div className="mt-4 flex items-start justify-between">
-                        <Listbox value={selectedGroupId} onChange={setSelectedGroupId}>
+                        <Listbox
+                            value={selectedGroupId}
+                            onChange={setSelectedGroupId}
+                            disabled={myGroups?.groups.length === 0}
+                        >
                             <div className="relative w-48">
                                 <Listbox.Button className="relative w-full cursor-default border border-slate-100 rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-sky-300 sm:text-sm">
                                     <span className={classNames(!selectedGroupId && 'opacity-50', 'block truncate')}>
@@ -179,11 +184,20 @@ function CreatePost() {
                             </Switch.Group>
                         </div>
                     </div>
-                    <div className="flex items-center mt-6">
-                        <button type="button" className="button" onClick={handleCreatePost} disabled={isCreatingPost}>
-                            Create Post
-                        </button>
-                    </div>
+                    {!isMyGroupsLoading && myGroups?.groups.length === 0 ? (
+                        <InfoComponent text="You have not joined any group. Please join any group to create a post!" />
+                    ) : (
+                        <div className="flex items-center mt-6">
+                            <button
+                                type="button"
+                                className="button"
+                                onClick={handleCreatePost}
+                                disabled={isCreatingPost}
+                            >
+                                Create Post
+                            </button>
+                        </div>
+                    )}
                 </div>
             </Layout>
         </SEO>

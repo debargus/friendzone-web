@@ -1,10 +1,13 @@
 import PopularGroups from '../components/PopularGroups'
+import EmptyComponent from '../components/shared/EmptyComponent'
 import Layout from '../components/shared/Layout'
 
 function Mentions() {
     return (
         <Layout aside={<PopularGroups />}>
-            <h1 className="mb-2">Mentions</h1>
+            <div>
+                <EmptyComponent title="Coming Soon!" description="This page is under development." />
+            </div>
         </Layout>
     )
 }
