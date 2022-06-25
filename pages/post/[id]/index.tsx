@@ -2,14 +2,7 @@ import { Fragment, useState } from 'react'
 import { formatDistanceToNow } from 'date-fns'
 import { GetServerSideProps } from 'next'
 import Link from 'next/link'
-import {
-    HiFire,
-    HiOutlineBookmark,
-    HiOutlineLockClosed,
-    HiOutlinePencilAlt,
-    HiOutlineShare,
-    HiOutlineTrash
-} from 'react-icons/hi'
+import { HiFire, HiOutlineLockClosed, HiOutlinePencilAlt, HiOutlineShare, HiOutlineTrash } from 'react-icons/hi'
 import sanitizeHtml from 'sanitize-html'
 import SEO from '../../../components/shared/SEO'
 import usePost from '../../../lib/client/hooks/post/usePost'
@@ -30,6 +23,9 @@ import classNames from 'classnames'
 import PopularGroups from '../../../components/PopularGroups'
 import useDeleteComment from '../../../lib/client/hooks/post/useDeleteComment'
 import { Dialog, Transition } from '@headlessui/react'
+import { MdOutlineBookmark, MdOutlineBookmarkBorder } from 'react-icons/md'
+import useAddBookmark from '../../../lib/client/hooks/post/useAddBookmark'
+import useRemoveBookmark from '../../../lib/client/hooks/post/useRemoveBookmark'
 
 const RichEditor = dynamic(() => import('react-draft-wysiwyg').then(({ Editor }) => Editor) as any, {
     ssr: false
@@ -69,12 +65,15 @@ function PostDetails({ postId, authenticated }: PostDetailsProps) {
     const { mutateAsync: addHot, isLoading: isAddingHot } = useAddHot()
     const { mutateAsync: removeHot, isLoading: isRemovingHot } = useRemoveHot()
     const { mutateAsync: deleteComment, isLoading: isDeletingComment, reset: resetDeleteComment } = useDeleteComment()
+    const { mutateAsync: addBookmark, isLoading: isAddingBookmark } = useAddBookmark()
+    const { mutateAsync: removeBookmark, isLoading: isRemovingBookmark } = useRemoveBookmark()
 
     if (!postData) {
         return <p>Loading...</p>
     }
 
-    const { id, author, content, created_at, group, is_public, comments, hots_count, is_updated, my_hot } = postData
+    const { id, author, content, created_at, group, is_public, comments, hots_count, is_updated, my_hot, my_bookmark } =
+        postData
 
     async function handleCommentPost() {
         const editorContent = editorState.getCurrentContent()
@@ -108,6 +107,19 @@ function PostDetails({ postId, authenticated }: PostDetailsProps) {
                 await removeHot(id)
             } else {
                 await addHot(id)
+            }
+            invalidatePost()
+        } catch (err) {
+            toast.error('Something went wrong!')
+        }
+    }
+
+    async function handleBookmarkClick() {
+        try {
+            if (!!my_bookmark) {
+                await removeBookmark(id)
+            } else {
+                await addBookmark(id)
             }
             invalidatePost()
         } catch (err) {
@@ -185,8 +197,19 @@ function PostDetails({ postId, authenticated }: PostDetailsProps) {
                                 <HiFire fontSize={20} className="-ml-1" />
                                 <span className="ml-1 text-sm font-medium">{hots_count}</span>
                             </button>
-                            <button className="button-icon h-8">
-                                <HiOutlineBookmark fontSize={20} className="text-slate-500" />
+                            <button
+                                className={classNames(
+                                    !!my_bookmark ? 'text-orange-500' : 'text-slate-500',
+                                    'button-icon h-8'
+                                )}
+                                onClick={handleBookmarkClick}
+                                disabled={isAddingBookmark || isRemovingBookmark}
+                            >
+                                {!!my_bookmark ? (
+                                    <MdOutlineBookmark fontSize={22} />
+                                ) : (
+                                    <MdOutlineBookmarkBorder fontSize={22} />
+                                )}
                             </button>
                             <button className="button-icon h-8">
                                 <HiOutlineShare fontSize={20} className="text-slate-500" />

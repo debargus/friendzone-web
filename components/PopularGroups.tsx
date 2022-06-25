@@ -20,7 +20,11 @@ function PopularGroups({}: PopularGroupsProps) {
                 data?.map((group) => (
                     <Link href={`/group/${group.id}`} key={group.id}>
                         <a className="flex flex-row items-center mt-3 pr-2 overflow-hidden">
-                            <img src={group.display_image} alt={group.name} className="w-9 h-9 rounded-md" />
+                            <img
+                                src={group.display_image}
+                                alt={group.name}
+                                className="w-9 h-9 rounded-md border border-slate-100"
+                            />
                             <div className="flex flex-col ml-3 text-sm overflow-hidden">
                                 <strong className="whitespace-nowrap font-medium text-slate-700 text-ellipsis overflow-hidden">
                                     {group.name}

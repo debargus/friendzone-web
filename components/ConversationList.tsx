@@ -10,7 +10,7 @@ function ConversationList({ activeId, handleSetActiveId }: ConversationListProps
 	const { data, isLoading } = usePopularUsers()
 
 	return (
-		<div className="w-72">
+		<div className="min-w-[18rem] flex flex-col">
 			<h3 className="font-semibold text-slate-700">Messages</h3>
 			<div className="mt-3">
 				<input

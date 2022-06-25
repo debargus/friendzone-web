@@ -1,13 +1,14 @@
 import GroupMiniView from '../../components/GroupMiniView'
 import PopularUsers from '../../components/PopularUsers'
 import Layout from '../../components/shared/Layout'
+import SEO from '../../components/shared/SEO'
 import usePopularGroups from '../../lib/client/hooks/group/usePopularGroups'
 
 function Trending() {
     const { data, isLoading } = usePopularGroups()
 
     return (
-        <div className="mb-6">
+        <SEO title="Trending">
             <Layout aside={<PopularUsers />}>
                 <h3 className="font-semibold text-slate-700">Trending Groups</h3>
                 <div className="mt-5 grid grid-cols-2 gap-6">
@@ -18,7 +19,7 @@ function Trending() {
                     )}
                 </div>
             </Layout>
-        </div>
+        </SEO>
     )
 }
 

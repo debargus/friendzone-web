@@ -31,9 +31,11 @@ function GroupMiniView({ group }: GroupViewType) {
                     </Link>
                     <span className="text-sm text-slate-400">{members_count} members</span>
                 </div>
-                <button className="button">
-                    <span>Join Group</span>
-                </button>
+                <Link href={`/group/${id}`}>
+                    <button className="button">
+                        <span>View Group</span>
+                    </button>
+                </Link>
             </div>
         </div>
     )

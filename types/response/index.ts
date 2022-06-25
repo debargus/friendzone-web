@@ -63,6 +63,13 @@ export type HotResponse = {
     updated_at: string
 }
 
+export type BookmarkResponse = {
+    id: string
+    created_at: string
+    updated_at: string
+    post?: PostResponse
+}
+
 export type CommentResponse = {
     id: string
     created_at: string
@@ -91,4 +98,5 @@ export type PostResponse = {
     my_downvote: DownvoteResponse | null
     my_upvote: UpvoteResponse | null
     my_hot: HotResponse | null
+    my_bookmark: BookmarkResponse | null
 }

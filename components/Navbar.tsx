@@ -174,7 +174,7 @@ function Navbar({ user }: NavbarProps) {
                                                     onClick={handleLogout}
                                                     className={classNames(
                                                         active && 'bg-gray-100',
-                                                        'active:bg-gray-200 rounded-md px-4 py-2 text-sm font-medium text-slate-700 cursor-pointer focus:bg-gray-200'
+                                                        'active:bg-gray-200 rounded-md px-4 py-2 text-sm text-red-500 font-medium text-slate-700 cursor-pointer focus:bg-gray-200'
                                                     )}
                                                 >
                                                     Sign out
