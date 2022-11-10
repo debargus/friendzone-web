@@ -15,12 +15,27 @@ import SEO from '../../components/shared/SEO'
 import Layout from '../../components/shared/Layout'
 import PopularGroups from '../../components/PopularGroups'
 import InfoComponent from '../../components/shared/InfoComponent'
+import { GetServerSideProps } from 'next'
+import { detectMobile } from '../../lib/utils/detectDevice'
 
 const RichEditor = dynamic(() => import('react-draft-wysiwyg').then(({ Editor }) => Editor) as any, {
     ssr: false
 }) as typeof Editor
 
-function CreatePost() {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    const { req } = context
+    const isMobile = detectMobile(req)
+
+    return {
+        props: { isMobile }
+    }
+}
+
+interface CreatePostProps {
+    isMobile: boolean
+}
+
+function CreatePost({ isMobile }: CreatePostProps) {
     const [editorState, setEditorState] = useState(EditorState.createEmpty())
     const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null)
     const [isPublic, setIsPublic] = useState(true)
@@ -88,7 +103,7 @@ function CreatePost() {
 
     return (
         <SEO title="Create a new post">
-            <Layout aside={<PopularGroups />}>
+            <Layout aside={<PopularGroups />} isMobile={isMobile}>
                 <div className="mb-6">
                     <h3 className="font-semibold text-slate-700 mb-5">Create a new post</h3>
                     <div className="mt-4">

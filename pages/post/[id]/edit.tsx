@@ -19,6 +19,7 @@ import { GetServerSideProps } from 'next'
 import { fetchPost } from '../../../lib/client/hooks/post/usePost'
 import useUpdatePost, { PostUpdatePayload } from '../../../lib/client/hooks/post/useUpdatePost'
 import PopularGroups from '../../../components/PopularGroups'
+import { detectMobile } from '../../../lib/utils/detectDevice'
 
 const RichEditor = dynamic(() => import('react-draft-wysiwyg').then(({ Editor }) => Editor) as any, {
     ssr: false
@@ -27,11 +28,13 @@ const RichEditor = dynamic(() => import('react-draft-wysiwyg').then(({ Editor })
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const { params, req } = context
     const authenticated = !!req.cookies?.jwt
+    const isMobile = detectMobile(req)
 
     const post = await fetchPost(String(params?.id))
 
     if (!post) {
         return {
+            isMobile,
             notFound: true
         }
     }
@@ -46,15 +49,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
 
     return {
-        props: { post }
+        props: { isMobile, post }
     }
 }
 
 interface UpdatePostProps {
+    isMobile: boolean
     post: PostResponse
 }
 
-function UpdatePost({ post }: UpdatePostProps) {
+function UpdatePost({ isMobile, post }: UpdatePostProps) {
     const [editorState, setEditorState] = useState(EditorState.createEmpty())
     const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null)
     const [isPublic, setIsPublic] = useState(true)
@@ -133,7 +137,7 @@ function UpdatePost({ post }: UpdatePostProps) {
 
     return (
         <SEO title="Update post">
-            <Layout aside={<PopularGroups />}>
+            <Layout aside={<PopularGroups />} isMobile={isMobile}>
                 <div className="mb-6">
                     <h3 className="font-semibold text-slate-700 mb-5">Update post</h3>
                     <div className="mt-4">

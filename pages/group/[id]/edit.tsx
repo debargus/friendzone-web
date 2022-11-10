@@ -21,6 +21,7 @@ import { getCroppedImg } from '../../../lib/utils/getCroppedImg'
 import useUpdateGroup from '../../../lib/client/hooks/group/useUpdateGroup'
 import useDeleteGroup from '../../../lib/client/hooks/group/useDeleteGroup'
 import PopularGroups from '../../../components/PopularGroups'
+import { detectMobile } from '../../../lib/utils/detectDevice'
 
 const RichEditor = dynamic(() => import('react-draft-wysiwyg').then(({ Editor }) => Editor) as any, {
     ssr: false
@@ -31,26 +32,29 @@ const cropDimensions: Crop = { x: 0, y: 0, width: 300, height: 100, unit: 'px' }
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const { params, req } = context
     const authenticated = !!req.cookies?.jwt
+    const isMobile = detectMobile(req)
 
     const response = await client.get('/group/' + params?.id)
 
     if (!response.data) {
         return {
+            isMobile,
             notFound: true
         }
     }
 
     return {
-        props: { group: response.data?.data.group, authenticated }
+        props: { isMobile, group: response.data?.data.group, authenticated }
     }
 }
 
 interface GroupUpdateProps {
+    isMobile: boolean
     group: GroupResponse
     authenticated: boolean
 }
 
-function UpdateGroup({ group }: GroupUpdateProps) {
+function UpdateGroup({ isMobile, group }: GroupUpdateProps) {
     const [groupName, setGroupName] = useState('')
     const [editorState, setEditorState] = useState(EditorState.createEmpty())
     const [isEditorFocused, setIsEditorFocused] = useState(false)
@@ -159,7 +163,7 @@ function UpdateGroup({ group }: GroupUpdateProps) {
 
     return (
         <SEO title="Create a new group">
-            <Layout aside={<PopularGroups />}>
+            <Layout aside={<PopularGroups />} isMobile={isMobile}>
                 <div className="mb-6">
                     <h3 className="font-semibold text-slate-700 mb-5">Update Group</h3>
                     <label

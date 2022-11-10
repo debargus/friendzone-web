@@ -19,31 +19,35 @@ import useGroupRequests from '../../../lib/client/hooks/group/useGroupRequests'
 import useJoinRequest from '../../../lib/client/hooks/group/useJoinRequest'
 import useMyInfo from '../../../lib/client/hooks/user/useMyInfo'
 import useUserGroups from '../../../lib/client/hooks/user/useUserGroups'
+import { detectMobile } from '../../../lib/utils/detectDevice'
 import { GroupResponse } from '../../../types/response'
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const { params, req } = context
     const authenticated = !!req.cookies?.jwt
+    const isMobile = detectMobile(req)
 
     const response = await client.get('/group/' + params?.id)
 
     if (!response.data) {
         return {
+            isMobile,
             notFound: true
         }
     }
 
     return {
-        props: { group: response.data?.data.group, authenticated }
+        props: { isMobile, group: response.data?.data.group, authenticated }
     }
 }
 
 interface GroupDetailsProps {
+    isMobile: boolean
     group: GroupResponse
     authenticated: boolean
 }
 
-function GroupDetails({ group, authenticated }: GroupDetailsProps) {
+function GroupDetails({ isMobile, group, authenticated }: GroupDetailsProps) {
     const [requestModal, setRequestModal] = useState(false)
     const [totalMembers, setTotalMembers] = useState<number>(0)
 
@@ -118,7 +122,7 @@ function GroupDetails({ group, authenticated }: GroupDetailsProps) {
 
     return (
         <SEO title={name} description={description} image={display_image}>
-            <Layout aside={<PopularGroups />}>
+            <Layout aside={<PopularGroups />} isMobile={isMobile}>
                 <div
                     className="aspect-[6/2] rounded-lg bg-cover bg-center bg-sky-100"
                     style={{ backgroundImage: `url("${cover_image}")` }}

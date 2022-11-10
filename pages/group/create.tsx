@@ -17,6 +17,8 @@ import { Editor } from 'react-draft-wysiwyg'
 import draftToHtml from 'draftjs-to-html'
 import Layout from '../../components/shared/Layout'
 import PopularGroups from '../../components/PopularGroups'
+import { GetServerSideProps } from 'next'
+import { detectMobile } from '../../lib/utils/detectDevice'
 
 const RichEditor = dynamic(() => import('react-draft-wysiwyg').then(({ Editor }) => Editor) as any, {
     ssr: false
@@ -24,7 +26,20 @@ const RichEditor = dynamic(() => import('react-draft-wysiwyg').then(({ Editor })
 
 const cropDimensions: Crop = { x: 0, y: 0, width: 300, height: 100, unit: 'px' }
 
-function CreateGroup() {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    const { req } = context
+    const isMobile = detectMobile(req)
+
+    return {
+        props: { isMobile }
+    }
+}
+
+interface CreateGroupProps {
+    isMobile: boolean
+}
+
+function CreateGroup({ isMobile }: CreateGroupProps) {
     const [groupName, setGroupName] = useState('')
     const [editorState, setEditorState] = useState(EditorState.createEmpty())
     const [isEditorFocused, setIsEditorFocused] = useState(false)
@@ -114,7 +129,7 @@ function CreateGroup() {
 
     return (
         <SEO title="Create a new group">
-            <Layout aside={<PopularGroups />}>
+            <Layout aside={<PopularGroups />} isMobile={isMobile}>
                 <div className="mb-6">
                     <h3 className="font-semibold text-slate-700 mb-5">Create Group</h3>
                     <label

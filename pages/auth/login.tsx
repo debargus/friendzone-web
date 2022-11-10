@@ -44,7 +44,6 @@ function Login() {
             toast.success('Login Successful!')
             router.push('/')
         } catch (err: any) {
-            toast.error(`Error: ${err?.response?.data?.message}` ?? 'Something went wrong!')
             console.log(err)
         }
         setIsLoading(false)

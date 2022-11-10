@@ -26,6 +26,7 @@ import { Dialog, Transition } from '@headlessui/react'
 import { MdOutlineBookmark, MdOutlineBookmarkBorder } from 'react-icons/md'
 import useAddBookmark from '../../../lib/client/hooks/post/useAddBookmark'
 import useRemoveBookmark from '../../../lib/client/hooks/post/useRemoveBookmark'
+import { detectMobile } from '../../../lib/utils/detectDevice'
 
 const RichEditor = dynamic(() => import('react-draft-wysiwyg').then(({ Editor }) => Editor) as any, {
     ssr: false
@@ -34,24 +35,27 @@ const RichEditor = dynamic(() => import('react-draft-wysiwyg').then(({ Editor })
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const { params, req } = context
     const authenticated = !!req.cookies?.jwt
+    const isMobile = detectMobile(req)
 
     if (!params?.id) {
         return {
+            isMobile,
             notFound: true
         }
     }
 
     return {
-        props: { postId: String(params?.id), authenticated }
+        props: { isMobile, postId: String(params?.id), authenticated }
     }
 }
 
 interface PostDetailsProps {
+    isMobile: boolean
     postId: string
     authenticated: boolean
 }
 
-function PostDetails({ postId, authenticated }: PostDetailsProps) {
+function PostDetails({ isMobile, postId, authenticated }: PostDetailsProps) {
     const [editorState, setEditorState] = useState(EditorState.createEmpty())
     const [isEditorFocused, setIsEditorFocused] = useState(false)
     const [deleteCommentModal, setDeleteCommentModal] = useState(false)
@@ -142,7 +146,7 @@ function PostDetails({ postId, authenticated }: PostDetailsProps) {
 
     return (
         <SEO title={`Posted by ${author.name}`}>
-            <Layout aside={<PopularGroups />}>
+            <Layout aside={<PopularGroups />} isMobile={isMobile}>
                 <div className="flex flex-row items-start w-full mb-8">
                     <div className="flex flex-col items-center min-w-fit">
                         <Link href={`/user/${author.username}`}>
@@ -156,11 +160,13 @@ function PostDetails({ postId, authenticated }: PostDetailsProps) {
                         <PostEngagement post={postData} onActionComplete={invalidatePost} />
                     </div>
                     <div className="flex flex-col ml-3 flex-1">
-                        <div className="flex flex-row items-center text-sm mb-1.5 gap-2">
+                        <div className="flex flex-row md:items-center text-sm mb-2 md:mb-1.5 gap-2">
                             <Link href={`/user/${author.username}`}>
                                 <a>
                                     <strong>{author.name}</strong>
-                                    <span className="text-slate-400 font-medium ml-2">@{author.username}</span>
+                                    <span className="text-slate-400 font-medium ml-2 hidden md:block">
+                                        @{author.username}
+                                    </span>
                                 </a>
                             </Link>
                             <span className="text-slate-400">&bull;</span>

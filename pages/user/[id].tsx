@@ -9,13 +9,16 @@ import useMyInfo from '../../lib/client/hooks/user/useMyInfo'
 import Layout from '../../components/shared/Layout'
 import PopularUsers from '../../components/PopularUsers'
 import EmptyComponent from '../../components/shared/EmptyComponent'
+import { detectMobile } from '../../lib/utils/detectDevice'
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const { params, req } = context
     const authenticated = !!req.cookies?.jwt
+    const isMobile = detectMobile(req)
 
     if (!params || !params?.id) {
         return {
+            isMobile,
             notFound: true
         }
     }
@@ -23,21 +26,22 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     try {
         const user = await fetchUserInfo(String(params.id))
         return {
-            props: { user, authenticated }
+            props: { isMobile, user, authenticated }
         }
     } catch (err) {
         return {
-            props: { user: null, authenticated }
+            props: { isMobile, user: null, authenticated }
         }
     }
 }
 
 interface UserDetailsProps {
+    isMobile: boolean
     user: UserResponse | null
     authenticated: boolean
 }
 
-function UserDetails({ user, authenticated }: UserDetailsProps) {
+function UserDetails({ isMobile, user, authenticated }: UserDetailsProps) {
     const { data: myInfo } = useMyInfo(authenticated)
     const { data: userPosts, isLoading } = useUserPosts(user?.id)
 
@@ -49,7 +53,7 @@ function UserDetails({ user, authenticated }: UserDetailsProps) {
 
     return (
         <SEO title={name} description={description} image={avatar ?? ''}>
-            <Layout aside={<PopularUsers />}>
+            <Layout aside={<PopularUsers />} isMobile={isMobile}>
                 <ProfileHeader profileData={user} isMyProfile={myInfo?.id === user.id} />
                 <div className="my-8">
                     <h3 className="font-semibold text-slate-700">Recent Posts</h3>

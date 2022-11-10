@@ -1,11 +1,11 @@
-import { HiOutlineAnnotation, HiOutlineAtSymbol, HiOutlineBookmark, HiOutlineHome, HiTrendingUp } from 'react-icons/hi'
+import { HiOutlineAnnotation, HiOutlineBookmark, HiOutlineHome, HiTrendingUp } from 'react-icons/hi'
 
 export const SIDEBAR_LINK = [
     {
         key: 'home',
         label: 'Home',
         link: '/',
-        matchingPaths: ['/'],
+        matchingPaths: ['/', '/post/[id]'],
         icon: <HiOutlineHome fontSize={22} />
     },
     {
@@ -22,13 +22,13 @@ export const SIDEBAR_LINK = [
         matchingPaths: ['/messages'],
         icon: <HiOutlineAnnotation fontSize={22} />
     },
-    {
-        key: 'mentions',
-        label: 'Mentions',
-        link: '/mentions',
-        matchingPaths: ['/mentions'],
-        icon: <HiOutlineAtSymbol fontSize={22} />
-    },
+    // {
+    //     key: 'mentions',
+    //     label: 'Mentions',
+    //     link: '/mentions',
+    //     matchingPaths: ['/mentions'],
+    //     icon: <HiOutlineAtSymbol fontSize={22} />
+    // },
     {
         key: 'saved',
         label: 'Saved',

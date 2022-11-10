@@ -17,10 +17,11 @@ import { client } from '../lib/client'
 import { UserResponse } from '../types/response'
 
 interface NavbarProps {
+    isMobile: boolean
     user?: UserResponse
 }
 
-function Navbar({ user }: NavbarProps) {
+function Navbar({ isMobile, user }: NavbarProps) {
     const router = useRouter()
 
     async function handleLogout() {
@@ -40,21 +41,26 @@ function Navbar({ user }: NavbarProps) {
                             <span className="text-sky-500 font-bold text-lg ml-2">Friendzone</span>
                         </a>
                     </Link>
-                    <div className="relative ml-8">
-                        <FiSearch fontSize={20} className="text-slate-400 absolute top-1/2 left-2 -translate-y-1/2" />
-                        <input
-                            type="text"
-                            placeholder="Search"
-                            className="text-sm focus:outline-none active:outline-none bg-slate-100 border border-slate-200 focus:border-transparent focus:border-transparent focus:bg-transparent ring-0 focus:ring-2 ring-sky-500 w-[24rem] h-9 px-9 rounded-md"
-                        />
-                        <div className="absolute top-1/2 right-2 -translate-y-1/2 border border-slate-300 text-slate-300 font-bold rounded-md w-6 h-6 flex cursor-default">
-                            <span className="m-auto text-xs font-bold">/</span>
+                    {!isMobile && (
+                        <div className="relative ml-8">
+                            <FiSearch
+                                fontSize={20}
+                                className="text-slate-400 absolute top-1/2 left-2 -translate-y-1/2"
+                            />
+                            <input
+                                type="text"
+                                placeholder="Search"
+                                className="text-sm focus:outline-none active:outline-none bg-slate-100 border border-slate-200 focus:border-transparent focus:border-transparent focus:bg-transparent ring-0 focus:ring-2 ring-sky-500 w-[24rem] h-9 px-9 rounded-md"
+                            />
+                            <div className="absolute top-1/2 right-2 -translate-y-1/2 border border-slate-300 text-slate-300 font-bold rounded-md w-6 h-6 flex cursor-default">
+                                <span className="m-auto text-xs font-bold">/</span>
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
                 <div className="flex items-center">
                     <Menu as="div" className="relative inline-block text-left">
-                        <Menu.Button className="button mr-4">
+                        <Menu.Button className="button mr-0 md:mr-4">
                             <HiOutlinePlus fontSize={18} className="-ml-1" /> <span className="ml-2">Create</span>
                         </Menu.Button>
                         <Transition
@@ -104,20 +110,24 @@ function Navbar({ user }: NavbarProps) {
                             </Menu.Items>
                         </Transition>
                     </Menu>
-                    <Link href="/messages">
-                        <a className="button-icon">
-                            <HiOutlineInbox fontSize={22} />
-                        </a>
-                    </Link>
-                    <button className="button-icon relative">
-                        <HiOutlineBell fontSize={22} />
-                        <span className="absolute bg-rose-500 text-white text-xs font-medium rounded rounded-md px-1 bottom-5 left-5">
-                            12
-                        </span>
-                    </button>
-                    <button className="button-icon">
-                        <HiOutlineQuestionMarkCircle fontSize={22} />
-                    </button>
+                    {!isMobile && (
+                        <>
+                            <Link href="/messages">
+                                <a className="button-icon">
+                                    <HiOutlineInbox fontSize={22} />
+                                </a>
+                            </Link>
+                            <button className="button-icon relative">
+                                <HiOutlineBell fontSize={22} />
+                                <span className="absolute bg-rose-500 text-white text-xs font-medium rounded rounded-md px-1 bottom-5 left-5">
+                                    12
+                                </span>
+                            </button>
+                            <button className="button-icon">
+                                <HiOutlineQuestionMarkCircle fontSize={22} />
+                            </button>
+                        </>
+                    )}
                     <Menu as="div" className="ml-3 relative">
                         <div>
                             <Menu.Button className="bg-gray-800 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-sky-500">

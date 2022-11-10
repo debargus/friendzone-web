@@ -74,11 +74,11 @@ function Post({ data }: PostProps) {
                 <PostEngagement post={data} />
             </div>
             <div className="flex flex-col ml-3 flex-1">
-                <div className="flex flex-row items-center text-sm mb-1.5 gap-2">
+                <div className="flex flex-row md:items-center text-sm mb-2 md:mb-1.5 gap-2">
                     <Link href={`/user/${author.username}`}>
                         <a>
                             <strong>{author.name}</strong>
-                            <span className="text-slate-400 font-medium ml-2">@{author.username}</span>
+                            <span className="text-slate-400 font-medium ml-2 hidden md:block">@{author.username}</span>
                         </a>
                     </Link>
                     <span className="text-slate-400">&bull;</span>

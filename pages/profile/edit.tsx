@@ -20,6 +20,7 @@ import { useRouter } from 'next/router'
 import { useQueryClient } from 'react-query'
 import Layout from '../../components/shared/Layout'
 import PopularGroups from '../../components/PopularGroups'
+import { detectMobile } from '../../lib/utils/detectDevice'
 
 const RichEditor = dynamic(() => import('react-draft-wysiwyg').then(({ Editor }) => Editor) as any, {
 	ssr: false
@@ -28,6 +29,7 @@ const RichEditor = dynamic(() => import('react-draft-wysiwyg').then(({ Editor })
 export const getServerSideProps: GetServerSideProps = async (context) => {
 	const { req } = context
 	const authenticated = !!req.cookies?.jwt
+	const isMobile = detectMobile(req)
 
 	if (!authenticated) {
 		return {
@@ -40,6 +42,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 	return {
 		props: {
+			isMobile,
 			authenticated
 		}
 	}
@@ -47,7 +50,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 const cropDimensions: Crop = { x: 0, y: 0, width: 400, height: 100, unit: 'px' }
 
-function EditProfile({ authenticated }: { authenticated: boolean }) {
+function EditProfile({ isMobile, authenticated }: { isMobile: boolean; authenticated: boolean }) {
 	const [fullName, setFullName] = useState('')
 	const [editorState, setEditorState] = useState(EditorState.createEmpty())
 	const [isEditorFocused, setIsEditorFocused] = useState(false)
@@ -159,7 +162,7 @@ function EditProfile({ authenticated }: { authenticated: boolean }) {
 
 	return (
 		<SEO title="Edit Profile">
-			<Layout aside={<PopularGroups />}>
+			<Layout aside={<PopularGroups />} isMobile={isMobile}>
 				<div className="mb-8">
 					<h3 className="font-semibold text-slate-700 mb-5">Update Profile</h3>
 					<label
